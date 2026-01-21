@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
+
 
 function Dashboard() {
   const [username, setUsername] = useState('');
@@ -30,7 +32,7 @@ function Dashboard() {
   const fetchHabits = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:5000/api/habits', {
+      const response = await fetch(`${API_URL}/api/habits`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -49,7 +51,7 @@ function Dashboard() {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch('http://localhost:5000/api/habits', {
+      const response = await fetch(`${API_URL}/api/habits`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +75,7 @@ function Dashboard() {
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/habits/${habitId}`, {
+      const response = await fetch(`${API_URL}/api/habits/${habitId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -94,7 +96,7 @@ function Dashboard() {
     const token = localStorage.getItem('token');
   
     try {
-      const response = await fetch(`http://localhost:5000/api/habits/${habitId}/complete`, {
+      const response = await fetch(`${API_URL}/api/habits/${habitId}/complete`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
