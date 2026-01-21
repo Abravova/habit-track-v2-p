@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { API_URL } from './config';
+import { login, register } from './services/authApi';
 
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -9,26 +9,16 @@ function Auth() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const endpoint = isLogin ? 'login' : 'register';
-    
+        
     try {
-      const response = await fetch(`${API_URL}/api/auth/${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
+      const data = isLogin
+            ? await login(username, password)
+            : await register(username, password);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        window.location.href = '/dashboard';  // Add this line
-    } else {
-        setMessage(`Error: ${data.message}`);
-      }
+      localStorage.setItem('token', data.token);
+      window.location.href = '/dashboard';  // Add this line
     } catch (error) {
-      setMessage('Network error');
+      setMessage(error.message);
     }
   };
 

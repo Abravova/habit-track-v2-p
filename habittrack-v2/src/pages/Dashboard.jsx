@@ -92,15 +92,42 @@ function Dashboard() {
     }
   };
 
-  const handleCompleteHabit = async (habitId) => {
+  const handleCompleteHabit = async (habitId, imageFile) => {
     const token = localStorage.getItem('token');
   
     try {
+      let imageUrl = null;
+  
+      // If there's an image, upload it first
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+  
+        const uploadResponse = await fetch(`${API_URL}/api/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+  
+        if (uploadResponse.ok) {
+          const uploadData = await uploadResponse.json();
+          imageUrl = uploadData.imageUrl;
+        } else {
+          setMessage('Image upload failed');
+          return;
+        }
+      }
+  
+      // Then mark habit as complete with the image URL
       const response = await fetch(`${API_URL}/api/habits/${habitId}/complete`, {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({ imageUrl })
       });
   
       const data = await response.json();
@@ -114,6 +141,7 @@ function Dashboard() {
         setTimeout(() => setMessage(''), 3000);
       }
     } catch (error) {
+      console.error('Error:', error);
       setMessage('Error completing habit');
     }
   };
@@ -123,8 +151,8 @@ function Dashboard() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
   
-    return habit.completedDates.some(date => {
-      const completedDate = new Date(date);
+    return habit.completions?.some(completion => {
+      const completedDate = new Date(completion.date);
       completedDate.setHours(0, 0, 0, 0);
       return completedDate.getTime() === today.getTime();
     });
@@ -169,32 +197,64 @@ function Dashboard() {
         {habits.length === 0 ? (
           <p>No habits yet. Create one above!</p>
         ) : (
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-            {habits.map((habit) => {
-              const completedToday = isCompletedToday(habit);
-              
-              return (
-                <li key={habit._id} style={{ 
-                  padding: '15px', 
-                  border: '1px solid #ddd', 
-                  marginBottom: '10px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  background: completedToday ? '#d4edda' : 'white'
-                }}>
+          <ul style={{ listStyle: 'none', padding: 0 }}>
+          {habits.map((habit) => {
+            const completedToday = isCompletedToday(habit);
+            const todayCompletion = habit.completions?.find(completion => {
+              const completedDate = new Date(completion.date);
+              completedDate.setHours(0, 0, 0, 0);
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return completedDate.getTime() === today.getTime();
+            });
+            
+            return (
+              <li key={habit._id} style={{ 
+                padding: '15px', 
+                border: '1px solid #ddd', 
+                marginBottom: '10px',
+                background: completedToday ? '#d4edda' : 'white'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '18px' }}>
                     {completedToday && '✓ '}
                     {habit.title}
                   </span>
                   <div>
                     {!completedToday && (
-                      <button 
-                        onClick={() => handleCompleteHabit(habit._id)}
-                        style={{ padding: '6px 12px', background: '#28a745', color: 'white', border: 'none', cursor: 'pointer', marginRight: '10px' }}
-                      >
-                        Complete Today
-                      </button>
+                      <>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          id={`file-${habit._id}`}
+                          style={{ display: 'none' }}
+                          onChange={(e) => {
+                            if (e.target.files[0]) {
+                              handleCompleteHabit(habit._id, e.target.files[0]);
+                            }
+                          }}
+                        />
+                        <label
+                          htmlFor={`file-${habit._id}`}
+                          style={{ 
+                            padding: '6px 12px', 
+                            background: '#007bff', 
+                            color: 'white', 
+                            border: 'none', 
+                            cursor: 'pointer',
+                            marginRight: '10px',
+                            display: 'inline-block'
+                          }}
+                        >
+                          Complete with Photo
+                        </label>
+                        <button 
+                          onClick={() => handleCompleteHabit(habit._id, null)}
+                          style={{ padding: '6px 12px', background: '#28a745', color: 'white', border: 'none', cursor: 'pointer', marginRight: '10px' }}
+                        >
+                          Complete (No Photo)
+                        </button>
+                      </>
                     )}
                     <button 
                       onClick={() => handleDeleteHabit(habit._id)}
@@ -203,10 +263,22 @@ function Dashboard() {
                       Delete
                     </button>
                   </div>
-                </li>
-              );
-            })}
-          </ul>
+                </div>
+                
+                {/* Show image if completed today with photo */}
+                {completedToday && todayCompletion?.imageUrl && (
+                  <div style={{ marginTop: '10px' }}>
+                    <img 
+                      src={todayCompletion.imageUrl} 
+                      alt="Completion proof" 
+                      style={{ maxWidth: '300px', borderRadius: '8px' }}
+                    />
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
         )}
       </div>
     </div>

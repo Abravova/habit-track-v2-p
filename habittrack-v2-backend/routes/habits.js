@@ -20,15 +20,18 @@ const auth = (req, res, next) => {
     }
 };
 
-//get all the habits for logged in users
-router.get('/', auth, async(req, res) => {
+// Get all habits for logged-in user
+router.get('/', auth, async (req, res) => {
     try {
-        const habits = await Habit.find({ userId: req.userId });
-        res.json(habits);
+      console.log('Fetching habits for user:', req.userId);
+      const habits = await Habit.find({ userId: req.userId });
+      console.log('Found habits:', habits);
+      res.json(habits);
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+      console.error('Error fetching habits:', error);
+      res.status(500).json({ message: 'Server error', error: error.message });
     }
-});
+  });
 
 //Create a new habit
 router.post('/', auth, async(req, res) => {
@@ -51,38 +54,49 @@ router.post('/', auth, async(req, res) => {
     }
 });
 
-// Mark a habit as completed for today
+/// Mark habit as complete for today (with optional image)
 router.post('/:id/complete', auth, async (req, res) => {
     try {
-        const habit = await Habit.findOne({ _id: req.params.id, userId: req.userId });
-
-        if (!habit) {
-            return res.status(404).json({ message: 'Habit not found' });
-        }
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const alreadyCompleted = habit.completedDates.some(date => {
-            const completedDate = new Date(date);
-            completedDate.setHours(0, 0, 0, 0);
-            return completedDate.getTime() === today.getTime();
-        });
-
-        if (alreadyCompleted) {
-            return res.status(400).json({ message: 'Already completed today' });
-        }
-
-        //Add todays date
-        habit.completedDates.push(today);
-        await habit.save();
-
-        res.json(habit);
+      const { imageUrl } = req.body; // Image URL comes from frontend after upload
+      
+      const habit = await Habit.findOne({ _id: req.params.id, userId: req.userId });
+      
+      if (!habit) {
+        return res.status(404).json({ message: 'Habit not found' });
+      }
+  
+      // Get today's date at midnight
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+  
+      // Check if already completed today
+      const alreadyCompleted = habit.completions?.some(completion => {
+        const completedDate = new Date(completion.date);
+        completedDate.setHours(0, 0, 0, 0);
+        return completedDate.getTime() === today.getTime();
+      });
+  
+      if (alreadyCompleted) {
+        return res.status(400).json({ message: 'Already completed today' });
+      }
+  
+      // Add completion with optional image
+      if (!habit.completions) {
+        habit.completions = [];
+      }
+      
+      habit.completions.push({
+        date: today,
+        imageUrl: imageUrl || null
+      });
+  
+      await habit.save();
+      res.json(habit);
     } catch (error) {
-        console.error('Error completing habit:', error);
-        res.status(500).json({ message: 'Server error' });
+      console.error('Error completing habit:', error);
+      res.status(500).json({ message: 'Server error' });
     }
-});
+  });
 
 // Delete a habit
 router.delete('/:id', auth, async (req, res) => {

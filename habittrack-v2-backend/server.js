@@ -4,6 +4,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const habitRoutes = require('./routes/habits');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 mongoose.connect(process.env.MONGO_URI)
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/habits', habitRoutes);
+app.use('/api/upload', uploadRoutes);
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Backend is working!' });
 });
