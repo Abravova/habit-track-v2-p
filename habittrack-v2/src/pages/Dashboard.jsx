@@ -134,9 +134,17 @@ function Dashboard() {
   
       if (response.ok) {
         setMessage('Habit completed for today!');
-        fetchHabits();
+        // Force immediate re-fetch
+        const newHabits = await fetch(`${API_URL}/api/habits`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }).then(res => res.json());
+        
+        setHabits(newHabits);
         setTimeout(() => setMessage(''), 3000);
       } else {
+        
         setMessage(data.message);
         setTimeout(() => setMessage(''), 3000);
       }
