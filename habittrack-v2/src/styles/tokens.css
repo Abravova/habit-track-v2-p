@@ -1,0 +1,103 @@
+:root {
+    /* Colors */
+    --color-accent: #4B5320; /* Dark Olive Green */
+    --color-background-header-footer: var(--color-accent);
+    --color-background-page: #F5F5DC; /* Beige */
+    --color-text: #4b2200; /* Dark Brown */
+    --color-link: #FFFFFF; /* White */
+    --color-link-active: 0.2em solid #ffffff; /* Saddle Brown */
+    
+    /* Compatibility variables for existing components */
+    --color-bg-primary: var(--color-background-page);
+    --color-bg-secondary: #FFFFFF;
+    --color-bg-accent: #E8E8D3; /* Lighter beige for accents */
+    --color-surface: #FFFFFF;
+    --color-text-primary: var(--color-text);
+    --color-text-secondary: #6B5B3D; /* Lighter brown for secondary text */
+    --color-border: #D4C4A8; /* Light brown border */
+    --color-border-focus: var(--color-accent);
+    --color-primary: var(--color-accent);
+    --color-primary-hover: #3A4219; /* Darker olive green */
+    --color-primary-light: #E8E8D3; /* Light beige */
+    --color-success: #4B5320; /* Using accent for success */
+    --color-error: #8B4513; /* Saddle brown for errors */
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(75, 83, 32, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(75, 83, 32, 0.15), 0 2px 4px -1px rgba(75, 83, 32, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(75, 83, 32, 0.15), 0 4px 6px -2px rgba(75, 83, 32, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(75, 83, 32, 0.15), 0 10px 10px -5px rgba(75, 83, 32, 0.1);
+    
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    
+    /* Spacing */
+    --spacing-header-footer: 1rem 1.2rem;
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    /* Fonts */
+    --font-family: "Charm", serif;
+    --font-family-heading: "Eater", serif;
+    --font-family-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-family-base: var(--font-family-body);
+    --font-size-large: 2.5rem;
+    --font-size-medium: 1.5rem;
+    --font-size-small: 1.2rem;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+    
+    /* Font Weights */
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* Transitions */
+    --transition-fast: 150ms ease-in-out;
+    --transition-base: 200ms ease-in-out;
+    --transition-slow: 300ms ease-in-out;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-background-page);
+    color: var(--color-text);
+    font-family: var(--font-family-body);
+}
+
+main {
+    margin: 1em 1.5em;
+}
+
+body.dark-mode {
+    --color-background-header-footer: #2E3B1F; /* Darker Olive Green */
+    --color-background-page: #000000; /* Almost Black */
+    --color-text: #ffffff; /* Light Cyan */
+    --color-link: var(--color-link);
+    --color-border: var(--color-link);
+    --color-link-active: 0.2em solid #FFFFFF; /* White */
+    
+    /* Dark mode compatibility variables */
+    --color-bg-primary: var(--color-background-page);
+    --color-text-primary: var(--color-text);
+    --color-text-secondary: #CCCCCC;
+    --color-border: #4A4A4A;
+    --color-primary: #5A6B2F; /* Lighter olive for dark mode */
+    --color-primary-hover: #6B7B3F;
+}
